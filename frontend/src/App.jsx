@@ -7,6 +7,7 @@ function App() {
   const [connection, setConnection] = useState(null);
   const [chatRoom, setChatRoom] = useState("");
   const [messages, setMessages] = useState([]);
+  const [currentUser, setCurrentUser] = useState("");
 
   const joinChat = async (userName, chatRoom) => {
     var connection = new HubConnectionBuilder()
@@ -15,7 +16,8 @@ function App() {
       .build();
 
     connection.on("ReceiveMessage", (userName, message) => {
-      setMessages((messages) => [...messages, { userName, message }]);
+      const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      setMessages((messages) => [...messages, { userName, message, time }]);
     });
 
     try {
@@ -24,6 +26,7 @@ function App() {
 
       setConnection(connection);
       setChatRoom(chatRoom);
+      setCurrentUser(userName);
     } catch (error) {
       console.log(error);
     }
@@ -36,6 +39,8 @@ function App() {
   const closeChat = async () => {
     await connection.stop();
     setConnection(null);
+    setMessages([]);
+    setCurrentUser("");
   };
  
 
@@ -47,6 +52,7 @@ function App() {
           chatRoom={chatRoom}
           closeChat={closeChat}
           sendMessage={sendMessage}
+          currentUser={currentUser}
         />
       ) : (
         <WaitingRoom joinChat={joinChat} />

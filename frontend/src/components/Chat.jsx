@@ -5,100 +5,184 @@ import {
   CloseButton,
   Heading,
   Input,
+  Text,
 } from "@chakra-ui/react";
 import { Message } from "./Message";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-
-export const Chat = ({ messages, chatRoom, closeChat, sendMessage}) => {
+export const Chat = ({ messages, chatRoom, closeChat, sendMessage, currentUser }) => {
   const [message, setMessage] = useState("");
-  const isValid = message !== null;
+  const messagesEndRef = useRef(null);
+  const isValid = message.trim() !== "";
 
   const onSendMessage = async () => {
-    sendMessage(message)
+    if (!isValid) return;
+    sendMessage(message);
     setMessage("");
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      onSendMessage();
+    }
+  };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="min-h-screen bg-[#0f1117] flex items-center justify-center p-6">
+    <Flex minH="100vh" bg="#0b0c10" align="center" justify="center" p={4}>
       <Box
         w="full"
-        maxW="400px"
-        rounded="xl"
+        maxW="450px"
+        h="650px"
+        bg="rgba(31, 40, 51, 0.4)"
+        backdropFilter="blur(16px)"
+        borderRadius="2xl"
         overflow="hidden"
         shadow="2xl"
         borderWidth="1px"
         borderColor="whiteAlpha.100"
+        display="flex"
+        flexDirection="column"
       >
-        <Flex justify="space-between">
-          <Heading
-            className="text-center flex-1"
-            fontSize="2xl"
-            color="whiteAlpha.400"
-            letterSpacing="tight"
-          >
-            {chatRoom}
-          </Heading>
-          <CloseButton align="center" onClick={closeChat} />
+        <Flex 
+          justify="space-between" 
+          align="center" 
+          px={6} 
+          py={4} 
+          borderBottomWidth="1px" 
+          borderColor="whiteAlpha.100"
+          bg="rgba(31, 40, 51, 0.2)"
+        >
+          <Flex align="center">
+            <Box 
+              h={2.5} 
+              w={2.5} 
+              borderRadius="full" 
+              bg="cyan.400" 
+              boxShadow="0 0 10px #00b4d8" 
+              mr={3} 
+            />
+            <Heading
+              fontSize="lg"
+              fontWeight="bold"
+              color="white"
+              letterSpacing="wide"
+            >
+              #{chatRoom}
+            </Heading>
+          </Flex>
+          <CloseButton 
+            color="whiteAlpha.700" 
+            _hover={{ bg: "whiteAlpha.100", color: "white" }} 
+            onClick={closeChat} 
+            size="md"
+            borderRadius="full"
+          />
         </Flex>
 
-        <Flex
-          bgGradient="to-r"
-          gradientFrom="cyan.900"
-          gradientVia="blue.950"
-          gradientTo="indigo.950"
-          borderBottomWidth="1px"
-          borderColor="whiteAlpha.100"
-          color="black"
-          px={7}
-          py={5}
-          allign="center"
-          gap={5}
+        <Box 
+          flex={1} 
+          overflowY="auto" 
+          px={6} 
+          py={4}
+          display="flex"
+          flexDirection="column"
+          css={{
+            '&::-webkit-scrollbar': {
+              width: '4px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              background: 'rgba(255, 255, 255, 0.2)',
+            },
+          }}
         >
-          <div>
-            {messages.map((messageInfo, index) => (
-              <Message messageInfo={messageInfo} key={index} />
-            ))}
-          </div>
-        </Flex>
-        <div>
+          {messages.length === 0 ? (
+            <Flex 
+              h="full" 
+              direction="column" 
+              align="center" 
+              justify="center" 
+              color="whiteAlpha.400" 
+              gap={2}
+              m="auto"
+            >
+              <Text fontSize="3xl">💬</Text>
+              <Text fontSize="sm">Здесь пока нет сообщений...</Text>
+            </Flex>
+          ) : (
+            messages.map((messageInfo, index) => (
+              <Message messageInfo={messageInfo} currentUser={currentUser} key={index} />
+            ))
+          )}
+          <Box ref={messagesEndRef} />
+        </Box>
+
+        <Box 
+          p={4} 
+          borderTopWidth="1px" 
+          borderColor="whiteAlpha.100" 
+          bg="rgba(31, 40, 51, 0.3)" 
+          display="flex" 
+          flexDirection="column" 
+          gap={2}
+        >
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Введите сообщение"
+            onKeyDown={handleKeyPress}
+            placeholder="Напишите сообщение..."
             size="md"
-            variant="outline"
             color="white"
-            borderColor="whiteAlpha.100"
-            bg="whiteAlpha.50"
-            rounded="xl"
+            bg="whiteAlpha.100"
+            borderRadius="xl"
             px={4}
-            _placeholder={{ color: "gray.600", fontSize: "sm" }}
-            _hover={{ borderColor: "whiteAlpha.200" }}
+            py={3}
+            border="1px solid"
+            borderColor="transparent"
+            _placeholder={{ color: "whiteAlpha.400", fontSize: "sm" }}
+            _hover={{ bg: "whiteAlpha.200" }}
             _focus={{
+              bg: "whiteAlpha.200",
               borderColor: "cyan.500",
-              boxShadow: "0 0 0 1px var(--chakra-colors-cyan-500)",
+              boxShadow: "0 0 0 1px #00b4d8",
             }}
           />
           <Button
             onClick={onSendMessage}
             size="md"
-            width="full"
-            bgColor="grey.100"
-            rounded="4xl"
-            mt={1}
-            disabled={!isValid}
-            className={[
-              "rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer",
-              isValid
-                ? "bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20"
-                : "bg-white/5 text-white/25 cursor-not-allowed",
-            ].join(" ")}
+            w="full"
+            borderRadius="xl"
+            isDisabled={!isValid}
+            bg={isValid ? "linear-gradient(135deg, #00b4d8 0%, #0077b6 100%)" : "whiteAlpha.50"}
+            color={isValid ? "white" : "whiteAlpha.300"}
+            _hover={isValid ? {
+              bg: "linear-gradient(135deg, #00c4e8 0%, #0087c6 100%)",
+              boxShadow: "0 4px 12px rgba(0, 180, 216, 0.3)"
+            } : {
+              bg: "whiteAlpha.50",
+            }}
+            _active={isValid ? {
+              bg: "linear-gradient(135deg, #00a4c8 0%, #0067a6 100%)"
+            } : {}}
+            transition="all 0.2s"
+            fontWeight="semibold"
+            fontSize="sm"
+            h={10}
           >
             Отправить
           </Button>
-        </div>
+        </Box>
       </Box>
-    </div>
+    </Flex>
   );
 };

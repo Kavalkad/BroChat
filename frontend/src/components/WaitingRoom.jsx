@@ -9,7 +9,7 @@ import {
   Stack,
   Field,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState} from "react";
 import { LuUser, LuHash, LuArrowRight } from "react-icons/lu";
 
 export const WaitingRoom = ({ joinChat }) => {

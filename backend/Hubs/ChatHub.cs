@@ -64,7 +64,7 @@ namespace backend.Hubs
 
                 await Clients
                     .Group(connection.ChatRoom)
-                    .ReceiveMessage("", $"Bro {connection.UserName} вышел из чата");
+                    .ReceiveMessage("", $"{connection.UserName} вышел из чата");
             }
 
             await base.OnDisconnectedAsync(exception);

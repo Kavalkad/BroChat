@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     networks:
       - brochatik-network
+    container_name: chat-frontend
         
   backend:
     build:
@@ -24,15 +25,16 @@ services:
       - redis
     networks:
       - brochatik-network
-
+    container_name: chat-backend
+        
   redis:
     image: redis
     ports:
       - "6379:6379"
     networks:
       - brochatik-network
+    container_name: chat-redis
         
-
 networks:
   brochatik-network:
     driver: bridge

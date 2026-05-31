@@ -9,16 +9,12 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true
   },
-  serve: {
+  server: {
     host: true,
     port: 5173,
     strictPort: true,
     watch: {
       usePolling: true
     }
-  },
-  build: {
-    outDir: "dist",
-    emptyOutDir: true
   }
 })

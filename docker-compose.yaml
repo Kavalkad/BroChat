@@ -3,6 +3,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    container_name: brochatik-frontend
     ports:
       - "5173:5173"
     depends_on:
@@ -15,10 +16,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: "brochatik-backend"
     ports:
       - "5176:5176"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5176
       - ConnectionStrings__Redis=redis:6379
     depends_on:
       - redis
@@ -27,6 +30,7 @@ services:
 
   redis:
     image: redis
+    container_name: brochatik-redis
     ports:
       - "6379:6379"
     networks:

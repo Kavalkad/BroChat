@@ -1,4 +1,3 @@
-using System.Text;
 using System.Text.Json;
 using backend.Interfaces;
 using backend.Models;
@@ -27,15 +26,11 @@ namespace backend.Hubs
         public async Task SendMessage(string message)
         {
             var connectionString = await _cache.GetAsync(Context.ConnectionId);
-
             
-
             var connection = JsonSerializer.Deserialize<UserConnection>(connectionString);
 
             if (connection is not null)
             {
-                Console.WriteLine(connection.ChatRoom + connection.UserName);
-
                 var messageModel = new Message
                 {
                     UserName = connection.UserName,
